@@ -42,7 +42,7 @@ jobs:
           --build-arg REL_PATH=rel
           --build-arg UMBRELLA_PATH=/outdoor_dwa_umbrella
       - name: Publish Phoenix Docker Image
-        run: docker login ghcr.io --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} && docker push ${{ steps.app_release_metadata.outputs.IMAGE_URL }}
+        run: docker login ghcr.io --username ${{ github.actor }} --password ${{ secrets.GHCR_TOKEN }} && docker push ${{ steps.app_release_metadata.outputs.IMAGE_URL }}
       - name: Bucket release metadata
         id: bucket_release_metadata
         run: echo ::set-output name=IMAGE_URL::ghcr.io/erikknaake/dwa-outdoor/dwa-outdoor-bucket:${{ steps.generate_tag.outputs.new_tag }}
@@ -54,7 +54,7 @@ jobs:
           --file outdoor_dwa_umbrella/minio/create-bucket.Dockerfile
           --tag $IMAGE_URL
       - name: Publish Create Bucker Docker Image
-        run: docker login ghcr.io --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} && docker push ${{ steps.bucket_release_metadata.outputs.IMAGE_URL }}
+        run: docker login ghcr.io --username ${{ github.actor }} --password ${{ secrets.GHCR_TOKEN }} && docker push ${{ steps.bucket_release_metadata.outputs.IMAGE_URL }}
       - name: Patch k8s file for new image versions
         run: ./patch_k8s_images.sh ${{ steps.generate_tag.outputs.new_tag }}
         working-directory: ./outdoor_dwa_umbrella/
