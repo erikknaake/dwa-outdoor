@@ -70,7 +70,7 @@ spec:
         - name: packages
       containers:
         - name: outdoor-dwa-umbrella
-          image: ghcr.io/erikknaake/dwa-outdoor/dwa-outdoor-app:v0.13.0
+          image: ghcr.io/erikknaake/dwa-outdoor/dwa-outdoor-app:v1.2.0
           ports:
             - containerPort: 80
           env:
@@ -102,7 +102,7 @@ spec:
               value: "15"
       initContainers:
         - name: outdoor-dwa-create-bucket
-          image: ghcr.io/erikknaake/dwa-outdoor/dwa-outdoor-bucket:v0.13.0
+          image: ghcr.io/erikknaake/dwa-outdoor/dwa-outdoor-bucket:v1.2.0
           env:
             - name: MINIO_ACCESS_KEY
               value: "minio"
