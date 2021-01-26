@@ -10,7 +10,7 @@ DwaOutdoor was created by 5 software development students following the DWA mino
 This project had to use Elixir with Phoenix and needed to take a look into docker. We also went and looked into kubernetes. 
 We had 8 weeks for this project and invested 2 of those weeks in learning the technology stack.
 
-Because we learned a lot about docker we were asked to write an article about it, [this is the medium post we wrote](https://erikknaake.medium.com/dockerizing-elixir-phoenix-2aaf56209b9f)
+Because we learned a lot about docker we were asked to write an article about it, [this is the medium post we wrote.](https://erikknaake.medium.com/dockerizing-elixir-phoenix-2aaf56209b9f)
 
 All documents are written in Dutch as this was a project for our study.
 
