@@ -56,7 +56,7 @@ jobs:
       - name: Publish Create Bucker Docker Image
         run: docker login ghcr.io --username ${{ github.actor }} --password ${{ secrets.GHCR_TOKEN }} && docker push ${{ steps.bucket_release_metadata.outputs.IMAGE_URL }}
       - name: Patch k8s file for new image versions
-        run: ./patch_k8s_images.sh ${{ steps.generate_tag.outputs.new_tag }}
+        run: chmod +x ./patch_k8s_images.sh && ./patch_k8s_images.sh ${{ steps.generate_tag.outputs.new_tag }}
         working-directory: ./outdoor_dwa_umbrella/
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
