@@ -1,5 +1,6 @@
 # DwaOutdoor
 
+![Release](https://github.com/erikknaake/dwa-outdoor/workflows/Release%20docker%20images/badge.svg?branch=main)
 ![Build status](https://github.com/erikknaake/dwa-outdoor/workflows/Docker%20Image%20CI/badge.svg)
 [![DWA](https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/simple/kog6ht/development&style=flat&logo=cypress)](https://dashboard.cypress.io/projects/kog6ht/runs)
 
