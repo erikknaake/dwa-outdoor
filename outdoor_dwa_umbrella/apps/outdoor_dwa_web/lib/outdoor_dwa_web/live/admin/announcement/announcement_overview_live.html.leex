@@ -1,0 +1,42 @@
+<main class="container px-6 mx-auto">
+    <div class="flex justify-between mb-6 items-end">
+        <div>
+            <h4>Announcements</h4>
+            <%= if is_nil(@edition) do %>
+            <p>There is no active edition, create one first</p>
+            <% else %>
+            <p>Edition wide announcements for the current or upcoming edition starting on <%= OutdoorDwaWeb.DateFormatter.format_full_date(@edition.start_datetime) %> </p>
+            <% end %>
+        </div>
+
+        <%= if not (is_nil(@edition)) do %>
+        <a href="<%= Routes.admin_announcement_create_path(@socket, :index) %>" class="button button--primary">Create</a>
+        <% end %>
+    </div>
+
+    <%= if (length(@announcements) > 0) do %>
+    <table class="w-full table__container">
+        <thead>
+        <tr>
+            <th class="table__cell table__cell--header">Announcement</th>
+            <th class="table__cell table__cell--header">Created or last updated</th>
+            <th class="table__cell table__cell--header">Edit</th>
+        </tr>
+        </thead>
+        <tbody>
+        <%= for announcement <- @announcements do %>
+        <tr>
+            <td class="table__cell"><%= raw(announcement.announcement) %></td>
+            <td class="table__cell"><%= OutdoorDwaWeb.DateFormatter.format_full_date(announcement.updated_at) %></td>
+            <td class="table__cell">
+                <a href="<%= Routes.admin_announcement_details_path(@socket, :index, announcement.id) %>"
+                   class="button button--primary">Edit</a>
+            </td>
+        </tr>
+        <% end %>
+        </tbody>
+    </table>
+    <% else %>
+    <p>No announcements found.</p>
+    <% end %>
+</main>

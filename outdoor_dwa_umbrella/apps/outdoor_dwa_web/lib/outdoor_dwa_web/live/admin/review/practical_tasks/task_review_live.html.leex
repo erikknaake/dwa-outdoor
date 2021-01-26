@@ -1,0 +1,72 @@
+<main class="container px-6 mx-auto mb-12">
+    <h4>Task review</h4>
+    <p class="mb-8">Let them know how they did!</p>
+    <%= if(assigns[:submission]) do %>
+        <div class="tasks__card pb-4">
+            <div class="tasks__header">
+                <%= @submission.practical_task__team.practical_task.title %>
+            </div>
+
+                <div class="tasks__media" phx-hook="ReviewImageLoaded" id="review-image">
+                    <%= live_component @socket, OutdoorDwaWeb.UploadedFileLiveComponent, file_uuid: @submission.file_uuid %>
+                </div>
+
+            <div class="flex">
+                <div class="tasks__description">
+                    <b>About</b>
+                    <p> <%= raw @submission.practical_task__team.practical_task.description %></p>
+                </div>
+                <div class="tasks__description w-1/4 text-center flex flex-col items-center">
+                    <b>Team</b>
+                    <%= if(assigns[:photo_file_uuid]) do %>
+                        <div class="w-20 h-20 rounded-full m-3 bg-cover"
+                             id="preview"
+                             phx-click="show_file"
+                             phx-value-show_team_photo="<%= @photo_file_uuid %>"
+                             phx-target="#preview"
+                             style="background-image: url('<%= signed_url(@photo_file_uuid) %>')"></div>
+                    <% end %>
+                    <p><%= @team_name %></p>
+                </div>
+            </div>
+            <%= if !reviewed?(@submission.approval_state) do %>
+                <%= if !@scores_published do %>
+                    <div class="flex flex-row">
+                        <div class="tasks__buttons">
+                            <a href="#" class="button button--primary" phx-click="approve_submission"
+                               phx-value-submission_id="<%= @submission_id %>" phx-value-reason="<%= @reason %>">Accept</a>
+                            <a href="#" class="button button--danger" phx-click="reject_submission"
+                               phx-value-submission_id="<%= @submission_id %>" phx-value-reason="<%= @reason %>">Reject</a>
+                            <a href="#" class="button button--secondary" phx-click="skip_submission"
+                               phx-value-submission_id="<%= @submission_id %>">Skip</a>
+                        </div>
+                        <div id="media-time-status" class="py-4"></div>
+                    </div>
+
+                    <form phx-change="update_reason" class="mx-8 mb-4">
+                        <label class="form form__label">Reason</label>
+                        <input type="text" class="form__input" name="reason" value="<%= @reason%>" />
+                        <%= if(assigns[:feedback]) do %>
+                            <span class="block form__invalid-feedback"> <%= @feedback %> </span>
+                        <% end %>
+                    </form>
+                <% end %>
+            <% else %>
+                <span class="mx-6 block form__invalid-feedback"> Submission has already been reviewed  </span>
+                <a href="<%= Routes.admin_review_overview_path(@socket, :index) %>" class="mx-6 button button-primary bg-gray-300"> Back </a>
+            <% end %>
+        </div>
+
+        <%= if(assigns[:show_team_photo] && @show_team_photo != nil) do %>
+            <div class="<%= modal_css_classes(@photo_file_uuid) %>"
+                 phx-click="hide_file"
+                 phx-target="#modal__overlay">
+                <div class="modal__overlay" id="modal__overlay">
+                    <div class="modal__content">
+                        <img class="w-100" src="<%= signed_url(@photo_file_uuid) %>" alt="<%= @team_name %> photo"/>
+                    </div>
+                </div>
+            </div>
+        <% end %>
+    <% end %>
+</main>

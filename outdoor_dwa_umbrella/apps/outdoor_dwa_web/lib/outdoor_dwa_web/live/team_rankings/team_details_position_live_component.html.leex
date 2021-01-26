@@ -1,0 +1,8 @@
+<%= @position %>
+
+<%= case @position do %>
+    <% 1 -> %> <i class="fas fa-medal text-yellow-400"></i>
+    <% 2 -> %> <i class="fas fa-medal text-gray-400"></i>
+    <% 3 -> %> <i class="fas fa-medal text-orange-400"></i>
+    <% _ -> %>
+<% end %>

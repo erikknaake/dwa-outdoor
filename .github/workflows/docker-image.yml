@@ -1,0 +1,125 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ development ]
+  pull_request:
+    branches: [ development ]
+
+jobs:
+  build-phoenix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
+        with:
+          key: phoenix-docker-cache-${{ secrets.CACHE_KEY }}-{hash}
+          restore-keys: |
+            phoenix-docker-cache-${{ secrets.CACHE_KEY }}-
+      - name: Build Phoenix Docker image
+        run: >
+          docker build outdoor_dwa_umbrella
+          --file outdoor_dwa_umbrella/Dockerfile
+          --tag erikknaake/dwa:phoenix-ci-$GITHUB_SHA
+          --build-arg APPS_PATH=apps
+          --build-arg CONFIG_PATH=config
+          --build-arg DOMAIN_PATH=apps/outdoor_dwa
+          --build-arg WEB_PATH=apps/outdoor_dwa_web
+          --build-arg RELEASE_NAME=standard
+          --build-arg REL_PATH=rel
+          --build-arg UMBRELLA_PATH=/outdoor_dwa_umbrella
+      - name: Check Docker Image Size
+        run: |
+          LIMIT=150000000
+          IMAGE=erikknaake/dwa:phoenix-ci-$GITHUB_SHA
+          SIZE="$(docker image inspect "$IMAGE" --format='{{.Size}}')"
+          test "$SIZE" -gt "$LIMIT" && exit 1 || echo 'Ok!'
+      - name: Publish Phoenix Docker Image
+        run: docker login --username erikknaake --password ${{ secrets.DOCKER_HUB }} && docker push erikknaake/dwa:phoenix-ci-$GITHUB_SHA
+
+  build-create-bucket:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
+        with:
+          key: create-bucket-docker-cache-${{ secrets.CACHE_KEY }}-{hash}
+          restore-keys: |
+            create-bucket-docker-cache-${{ secrets.CACHE_KEY }}-
+      - name: Build Create Bucket Image
+        run: >
+          docker build outdoor_dwa_umbrella/minio
+          --file outdoor_dwa_umbrella/minio/create-bucket.Dockerfile
+          --tag erikknaake/dwa:create-bucket-ci-$GITHUB_SHA
+      - name: Check Docker Image Size
+        run: |
+          LIMIT=150000000
+          IMAGE=erikknaake/dwa:create-bucket-ci-$GITHUB_SHA
+          SIZE="$(docker image inspect "$IMAGE" --format='{{.Size}}')"
+          test "$SIZE" -gt "$LIMIT" && exit 1 || echo 'Ok!'
+      - name: Publish Create Bucker Docker Image
+        run: docker login --username erikknaake --password ${{ secrets.DOCKER_HUB }} && docker push erikknaake/dwa:create-bucket-ci-$GITHUB_SHA
+
+  end-to-end-tests:
+    runs-on: ubuntu-18.04
+    needs:
+      - build-phoenix
+      - build-create-bucket
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-elixir@v1
+        with:
+          otp-version: '22.2'
+          elixir-version: '1.9.4'
+      - name: Install Mix dependencies
+        working-directory: ./outdoor_dwa_umbrella/apps/outdoor_dwa
+        run: MIX_ENV=prod DATABASE_URL=ecto://postgres:postgres@localhost/dwa_outdoor COMPILE_PROD_CONFIG=true mix deps.get
+      - name: Pull Docker Images
+        run: |
+         docker login --username erikknaake --password ${{ secrets.DOCKER_HUB }}
+         docker pull minio/minio:RELEASE.2020-11-13T20-10-18Z
+         docker pull postgres:13.1-alpine
+         docker pull erikknaake/dwa:phoenix-ci-$GITHUB_SHA
+         docker pull erikknaake/dwa:create-bucket-ci-$GITHUB_SHA
+         docker pull nginx:1.19.2-alpine
+      - name: Start Docker Containers
+        working-directory: ./outdoor_dwa_umbrella/
+        run: docker-compose -f docker-compose.ci.yml up -d
+      - name: Precompile e2e seed script
+        working-directory: ./outdoor_dwa_umbrella/apps/outdoor_dwa
+        run: MIX_ENV=prod DATABASE_URL=ecto://postgres:postgres@localhost/dwa_outdoor COMPILE_PROD_CONFIG=true mix compile
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        with:
+          working-directory: tests/e2e-tests
+          browser: chrome
+          wait-on: 'http://localhost:4000'
+          record: true
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  format-elixir-code:
+    runs-on: ubuntu-18.04
+    needs:
+      - build-phoenix
+      - build-create-bucket
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: actions/setup-elixir@v1
+        with:
+          otp-version: '22.2'
+          elixir-version: '1.9.4'
+      - name: Install Mix dependencies
+        working-directory: ./outdoor_dwa_umbrella/
+        run: mix deps.get
+      - name: Run Mix Format
+        working-directory: ./outdoor_dwa_umbrella/
+        run: mix format
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Apply mix format changes

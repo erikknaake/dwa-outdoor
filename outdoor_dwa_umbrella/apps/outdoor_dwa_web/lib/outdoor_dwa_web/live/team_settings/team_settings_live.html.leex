@@ -1,0 +1,76 @@
+<main class="container px-6 mx-auto">
+    <%= if assigns[:team_settings] do %>
+    <div class="flex justify-between mb-6 items-end">
+        <div>
+            <h6>Team Settings</h6>
+            <p>An overview of all team settings</p>
+        </div>
+    </div>
+
+    <table class="w-full table__container">
+        <thead>
+            <tr>
+                <th class="table__cell table__cell--header w-11/12">Option</th>
+                <th class="table__cell table__cell--header">Current Setting</th>
+            </tr>
+        </thead>
+        <tbody id="settings">
+            <%= for team_setting <- @team_settings do %>
+                <%= case team_setting.value_type do 
+                    "boolean" ->    live_component @socket, 
+                                    OutdoorDwaWeb.TeamSettings.BooleanSettingComponent, 
+                                    id: team_setting.team_setting_id, 
+                                    team_setting: team_setting                    
+                end %>
+            <% end %>
+            <%= if assigns[:is_future_edition] do %>
+                <tr>
+                    <td class="p-4 pt-0">
+                        <%= if @photo_file_uuid == nil do %>
+                            The edition has not been started yet. In the meantime upload your team photo please.
+                        <% else %>
+                            Your team photo has been set.
+                        <% end %>
+                    </td>
+                    <td class="pr-4 pb-4">
+                        <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
+                            <div class="flex flex-shrink-0 text-center items-center pr-3 pl-3 pb-7 pt-7 bg-blue-500 text-white bg-cover">
+                                <%= if @photo_file_uuid == nil do %>
+                                    <%= form_for :upload, "#", [phx_change: :validate, phx_submit: :save] %>
+                                        <div class="flex flex-col">
+                                            <div class="flex flex-col">
+                                                <%= if assigns[:uploads] do %>
+                                                <label class="align-middle h-full border-b border-white">
+                                                    <span><i class="fas fa-folder-open"></i> Select</span>
+                                                    <%= live_file_input @uploads.file, [class: "hidden"]  %>
+                                                </label>
+                                                <% end %>
+                                                <%= if assigns[:uploads] && !assigns[:disabled] do %>
+                                                <button type="submit"
+                                                        class="<%= upload_button_css_classes(@uploads)%>">
+                                                    <i class="fas fa-cloud-upload-alt"></i> Upload
+                                                </button>
+                                                <% end %>
+                                            </div>
+                                            <%= live_component @socket, OutdoorDwaWeb.UploadErrorLiveComponent, file: @uploads.file %>
+                                        </div>
+                                    </form>
+                                <% else %>
+                                    <div class="w-full flex justify-center">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                <% end %>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>
+    <% end %>
+    <%= if assigns[:photo_file_uuid] do %>
+    <div class="tasks__media">
+        <%= live_component @socket, OutdoorDwaWeb.UploadedFileLiveComponent, file_uuid: @photo_file_uuid %>
+    </div>
+    <% end %>
+</main>

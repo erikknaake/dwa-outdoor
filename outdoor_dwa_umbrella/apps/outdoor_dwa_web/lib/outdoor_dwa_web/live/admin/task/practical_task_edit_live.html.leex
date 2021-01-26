@@ -1,0 +1,47 @@
+<main class="container px-6 mx-auto">
+    <div class="mb-6">
+        <h4><%= if @is_create do %>Create<% else %>Edit<% end %> task</h4>
+        <p>Make it an exiting practical task!</p>
+    </div>
+
+    <%= f = form_for @changeset, "#", [class: "form__container", phx_change: :validate, phx_submit: :save] %>
+    <div class="md:flex mb-4">
+        <div class="w-full">
+            <label class="form__label">Title</label>
+            <%= text_input f, :title, [class: "form__input", placeholder: "Title", phx_debounce: "blur" ] %>
+            <%= error_tag f, :title %>
+
+
+            <div phx-update="ignore" class="my-4">
+                <label class="form__label">Description</label>
+                <%= error_tag f, :description %>
+                <%= hidden_input f, :description, [id: "description-editor"] %>
+                <trix-editor input="description-editor" class="min-h-48"></trix-editor>
+            </div>
+
+            <label class="form__label">Difficulty</label>
+            <%= text_input f, :difficulty, [class: "form__input", placeholder: "Easy", phx_debounce: "blur" ] %>
+            <%= error_tag f, :difficulty %>
+
+            <label class="form__label">Travel Credit Reward</label>
+            <%= number_input f, :travel_credit_reward, [class: "form__input", placeholder: 2, min: 0] %>
+            <%= error_tag f, :travel_credit_reward %>
+
+            <label class="form__label">Published</label>
+            <%= checkbox f, :is_published, [placeholder: "Published", phx_debounce: "blur" ] %>
+            <%= error_tag f, :is_published %>
+
+        </div>
+    </div>
+
+    <%= submit "Submit", [class: submit_button_css_classes(!@changeset.valid?), phx_disable_with: "Saving...", disabled: !@changeset.valid? ] %>
+
+    </form>
+
+    <script>
+        document.addEventListener('trix-change', () => {
+            const editor = document.querySelector('#description-editor');
+            editor.dispatchEvent(new Event('change', {'bubbles': true}))
+        });
+    </script>
+</main>

@@ -1,0 +1,12 @@
+<main class="container px-6 mx-auto">
+    <h4>Travel Agents</h4>
+    <p class="mb-8">Add some agents to the editions!</p>
+
+    <%= if assigns[:agents] do %>
+        <%= live_component @socket, OutdoorDwaWeb.Admin.TravelAgentsListLiveComponent, agents: @agents %>
+    <% end %>
+
+    <%= if assigns[:users] do %>
+        <%= live_component @socket, OutdoorDwaWeb.Admin.TravelAgentsCreateLiveComponent, users: @users %>
+    <% end %>
+</main>

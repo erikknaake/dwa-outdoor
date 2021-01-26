@@ -1,0 +1,11 @@
+<tr>
+    <td class="p-4"> <%= @team_setting.name %> </td>
+    <td class="text-center pr-4">
+        <button phx-click="toggle_status" 
+            phx-value-setting_id=<%=@team_setting.team_setting_id%>
+            phx-value-current_value=<%=@team_setting.team_value%>
+            phx-target="<%= @myself %>"
+            class="button button--secondary w-full <%= @colors[@team_setting.team_value]%>"><%= @boolean_text[@team_setting.team_value] %>
+        </button>
+    </td>
+</tr>   

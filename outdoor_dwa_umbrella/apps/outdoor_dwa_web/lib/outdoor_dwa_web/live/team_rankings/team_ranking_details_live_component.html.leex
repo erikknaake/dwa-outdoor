@@ -1,0 +1,24 @@
+<%= if @team.team_id == @team_id do %>
+<tr class="table__my-team-row">
+<% else %>
+<tr>
+<% end %>
+    <td class="table__cell">
+        <%= live_component @socket, OutdoorDwaWeb.TeamDetailsPositionLiveComponent, position: @team.position %>
+    </td>
+    <td class="table__cell"><%= @team.team_name %></td>
+    <td class="table__cell"><%= @team.travel_credits %></td>
+    <td class="table__cell"><%= @team.travel_points %></td>
+    <td class="table__cell">
+        <%= if @team.team_id != @team_id do %>
+            <%= if @team.rival do %>
+                <div phx-click="unsubscribe_rival" phx-value-rival_id="<%= @team.team_id %>"><i class="fas fa-star text-yellow-300"></i></div>
+            <% else %>
+                <div phx-click="subscribe_rival" phx-value-rival_id="<%= @team.team_id %>"><i class="fas fa-star"></i></div>
+            <% end %>
+        <% end %>
+    </td>
+    <td class="table__cell">
+        <a href="#" class="button button--primary">View</a>
+    </td>
+</tr>

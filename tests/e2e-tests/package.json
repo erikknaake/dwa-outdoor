@@ -1,0 +1,17 @@
+{
+  "name": "e2e-tests",
+  "version": "1.0.0",
+  "description": "End to end tests",
+  "main": "index.js",
+  "scripts": {
+    "open": "cypress open",
+    "open:windows": "set CYPRESS_IS_WINDOWS=true && cypress open",
+    "reset-db:windows": "cd ..\\..\\outdoor_dwa_umbrella\\apps\\outdoor_dwa; $env:MIX_ENV = 'prod'; $env:DATABASE_URL = 'eecto://postgres:postgres@localhost/dwa_outdoor'; $env:SECRET_KEY_BASE = 'WnP6FgChxWpqluRF2I0ZE4idgnRlOPtbeuOwoNdR6pNWdUu3/pluNA6s/Kqw+CaW'; mix ecto.e2e"
+  },
+  "author": "Projectteam John vN",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^6.1.0",
+    "cypress-file-upload": "^4.1.1"
+  }
+}

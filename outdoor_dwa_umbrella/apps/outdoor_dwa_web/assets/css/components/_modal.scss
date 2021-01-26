@@ -1,0 +1,15 @@
+.modal {
+  @apply transition-opacity hidden;
+
+  &--active {
+    @apply overflow-y-hidden overflow-y-visible flex justify-center items-center absolute w-full h-full top-0 left-0;
+  }
+
+  &__overlay {
+    @apply fixed w-full h-full top-0 left-0 bg-black bg-opacity-50 flex justify-center items-center;
+  }
+
+  &__content {
+    @apply z-50 max-w-3/4 max-h-3/4;
+  }
+}

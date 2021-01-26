@@ -1,0 +1,18 @@
+<main class="container px-6 mx-auto">
+    <h4> Editions </h4>
+    <p class="mb-8"> An overview of all editions.</p>
+
+    <table class="w-full table__container">
+        <tr>
+            <th class="table__cell table__cell--header">Name</th>
+            <th class="table__cell table__cell--header">Begin date</th>
+            <th class="table__cell table__cell--header">End date</th>
+            <th class="table__cell table__cell--header">View</th>
+        </tr>
+
+        <%= for edition <- @editions do %>
+            <%= live_component @socket, OutdoorDwaWeb.EditionDetailsLiveComponent, edition: edition %>
+        <% end %>
+
+    </table>
+</main>

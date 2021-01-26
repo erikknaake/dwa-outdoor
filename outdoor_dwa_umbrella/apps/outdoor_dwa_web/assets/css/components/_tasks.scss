@@ -1,0 +1,21 @@
+.tasks {
+	&__card {
+		@apply shadow-md rounded-lg bg-white;
+	}
+
+	&__header {
+		@apply font-semibold text-xl text-gray-500 px-4 py-2 min-w-700;
+	}
+
+	&__media {
+		@apply w-full bg-gray-500 max-h-3/4 flex justify-center py-2;
+	}
+
+	&__description {
+		@apply px-6 py-4;
+	}
+
+	&__buttons {
+		@apply px-6 py-4;
+	}
+}

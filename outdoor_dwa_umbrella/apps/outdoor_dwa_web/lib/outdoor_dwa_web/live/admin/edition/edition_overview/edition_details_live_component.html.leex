@@ -1,0 +1,23 @@
+<tr>
+    <td class="table__cell">Edition <%= get_year(@edition.start_datetime) %></td>
+    <td class="table__cell"><%= format_date(@edition.start_datetime) %></td>
+    <td class="table__cell"><%= format_date(@edition.end_datetime) %></td>
+     <td class="table__cell">
+    <%= if @edition.is_open_for_registration do %>
+        <i class="fas fa-check text-green-600"></i>
+    <% end %>
+     </td>
+     <td class="table__cell text-center">
+    <%= if @is_admin do %>
+         <a href="<%= Routes.admin_edition_form_path(@socket, :edit, @edition.id) %>" class="button button--primary">Edit</a>
+    <% else %>
+        <a class="button button--primary button--disabled">Edit</a>
+    <% end %>
+    </td>
+    <td class="table__cell text-center">
+        <a href="<%= Routes.admin_travel_agents_path(@socket, :index, @edition.id) %>" class="button button--primary">View</a>
+    </td>
+    <td class="table__cell text-center">
+        <a href="<%= Routes.admin_coorganisator_path(@socket, :index, @edition.id) %>" class="button button--primary">View</a>
+    </td>
+</tr>

@@ -1,0 +1,7 @@
+.count-down {
+  &--no-hours {
+    span:first-child {
+      display: none;
+    }
+  }
+}

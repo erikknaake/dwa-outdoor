@@ -1,0 +1,12 @@
+<a <%= if @question.status == "not-bought" do %>
+        phx-click="buy-question" phx-value-question_id="<%= @question.id %>"
+   <% else %>
+        href="<%= Routes.location_task_path(@socket, :index, @question.id) %>"
+   <% end %>
+class="tracks__circle tracks__circle--<%= @question.status %>">
+    <%= if(@question.status == "not-bought") do %>
+        <b><%= @question.travel_credit_cost %>TC</b>
+    <% else %>
+        <%= @question.track_seq_no %>
+    <% end %>
+</a>

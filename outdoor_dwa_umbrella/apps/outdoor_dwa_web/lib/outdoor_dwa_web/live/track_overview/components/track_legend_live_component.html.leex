@@ -1,0 +1,11 @@
+<div class="pl-2">
+    <b>Legend</b>
+    <div>
+        <%= for legend_item <- @items do %>
+        <div class="flex flex-row tracks__row">
+            <%= live_component @socket, OutdoorDwaWeb.TrackLegendIconLiveComponent, status: legend_item.status, name: legend_item.name %>
+            <div class="flex items-center"><%= legend_item.description %></div>
+        </div>
+        <% end %>
+    </div>
+</div>

@@ -1,0 +1,46 @@
+<main class="container px-6 mx-auto">
+
+    <div class="flex justify-between">
+        <h4>Practical tasks</h4>
+        <%= if (!assigns[:is_future_edition] || @is_future_edition == nil) && assigns[:tasks] && assigns[:pdf_allowed] do %>
+            <a class="button button--gray mb-4 inline-block" href="<%= @pdf_path %>" target="_blank">Download tasks in pdf-format</a>
+        <% end %>
+    </div>
+
+    <%= if !assigns[:is_future_edition] || @is_future_edition == nil do %>
+        <p class="mb-8"> An overview of the available tasks.</p>
+
+        <%= if assigns[:tasks] do %>
+            <div class="max-w-full flex space-x-4">
+                <div class="swim-lanes__column">
+                    <p class="swim-lanes__header">Todo</p>
+                    <div class="swim-lanes__items">
+                        <%= render_to_do @socket, @tasks, @progression_allowed? %>
+                    </div>
+                </div>
+                <div class="swim-lanes__column">
+                    <p class="swim-lanes__header">Doing</p>
+                    <div class="swim-lanes__items">
+                        <%= render_doing @socket, @tasks, @progression_allowed? %>
+                    </div>
+                </div>
+
+                <div class="swim-lanes__column">
+                    <p class="swim-lanes__header">Review</p>
+                    <div class="swim-lanes__items">
+                        <%= render_review @socket, @tasks, @progression_allowed? %>
+                    </div>
+                </div>
+
+                <div class="swim-lanes__column">
+                    <p class="swim-lanes__header">Done</p>
+                    <div class="swim-lanes__items">
+                        <%= render_done @socket, @tasks, @progression_allowed? %>
+                    </div>
+                </div>
+            </div>
+        <% end %>
+    <% else %>
+        <%= live_component @socket, OutdoorDwaWeb.FutureEditionMessageLiveComponent, team_id: @team_id, is_future_edition: @is_future_edition, user_role: @user_role %>
+    <% end %>
+</main>

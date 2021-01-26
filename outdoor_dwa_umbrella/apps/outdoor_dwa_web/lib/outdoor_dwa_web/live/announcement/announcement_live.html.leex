@@ -1,0 +1,24 @@
+<main class="container px-6 mx-auto">
+    <h4>Announcements</h4>
+    <p class="mb-8">The latest announcements live of the organisation for your edition</p>
+
+    <%= if !assigns[:is_future_edition] || @is_future_edition == nil do %>
+
+        <%= if assigns[:announcements] && length(@announcements) > 0 do %>
+            <div class="shadow-md rounded-lg bg-white p-5">
+                <%= for announcement <- @announcements do %>
+                    <div class="border-b pt-3 pb-3">
+                        <p class="font-semibold text-blue-500"><%= OutdoorDwaWeb.DateFormatter.format_full_date(announcement.updated_at) %></p>
+                        <div><%= raw(announcement.announcement) %></div>
+                    </div>
+                <% end %>
+                <p class="pt-3">No more announcements.</p>
+            </div>
+        <% else %>
+            <p>No announcements found.</p>
+        <% end %>
+
+    <% else %>
+        <%= live_component @socket, OutdoorDwaWeb.FutureEditionMessageLiveComponent, team_id: @team_id, is_future_edition: @is_future_edition, user_role: @user_role %>
+    <% end %>
+</main>

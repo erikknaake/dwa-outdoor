@@ -1,0 +1,38 @@
+.form {
+  &__container {
+    @apply bg-white rounded-xl shadow-md px-8 py-4;
+  }
+
+  &__column-title {
+    @apply block font-semibold mb-3 text-gray-400;
+  }
+
+  &__field {
+    @apply mb-3;
+  }
+
+  &__invalid-feedback {
+    @apply text-sm text-red-500 italic;
+  }
+
+  &__label {
+    @apply block mb-1 uppercase font-medium text-sm;
+  }
+
+  &__input {
+    @apply block outline-none rounded-xl py-1.5 px-3 w-full border border-gray-400;
+  }
+
+  &--input-error {
+    @apply border-red-500;
+  }
+
+  select {
+    @apply outline-none rounded-xl py-1.5 px-3 border border-gray-400
+  }
+
+}
+
+.phx-no-feedback {
+  @apply hidden;
+}

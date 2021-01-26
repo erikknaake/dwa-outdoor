@@ -1,0 +1,13 @@
+.grid-item {
+  &__item {
+    @apply flex items-center justify-center flex-col p-9 bg-white;
+  }
+
+  &__title {
+    @apply text-gray-500 font-light text-sm uppercase mb-3 text-center;
+  }
+
+  &__content {
+    @apply text-blue-500 font-light text-2xl text-center;
+  }
+}

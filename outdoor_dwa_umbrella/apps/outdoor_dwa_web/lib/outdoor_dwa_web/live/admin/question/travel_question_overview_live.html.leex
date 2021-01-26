@@ -1,0 +1,33 @@
+<main class="container px-6 mx-auto">
+
+    <div class="flex justify-between mb-6 items-end">
+        <div>
+            <h4>Travel Questions</h4>
+            <p>An overview of all the travel questions</p>
+        </div>
+
+        <%= if not is_nil(@active_edition) do %>
+        <a href="<%= Routes.admin_travel_question_create_path(@socket, :index) %>" class="button button--secondary">Create</a>
+        <% end %>
+    </div>
+
+    <table class="w-full table__container">
+        <tr>
+            <th class="table__cell table__cell--header">Description</th>
+            <th class="table__cell table__cell--header">Travel credit cost</th>
+            <th class="table__cell table__cell--header">Travel credit reward</th>
+            <th class="table__cell table__cell--header">Edit</th>
+        </tr>
+
+        <%= for travel_question <- @travel_questions do %>
+        <tr>
+            <td class="table__cell"><%= travel_question.description %></td>
+            <td class="table__cell"><%= travel_question.travel_credit_cost %></td>
+            <td class="table__cell"><%= travel_question.travel_point_reward %></td>
+            <td class="table__cell">
+                <a href="<%= Routes.admin_travel_question_edit_path(@socket, :index, travel_question.id) %>" class="button button--primary">Edit</a>
+            </td>
+        </tr>
+        <% end %>
+    </table>
+</main>

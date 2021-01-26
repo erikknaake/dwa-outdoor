@@ -1,0 +1,7 @@
+<div class="tracks__circle tracks__circle--<%= @status %>">
+    <%= if(@status == "not-bought") do %>
+        <b>TC</b>
+    <% else %>
+        <%= @name %>
+    <% end %>
+</div>

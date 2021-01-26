@@ -1,0 +1,15 @@
+.two-pane-view {
+	@apply grid shadow-lg grid-cols-7 rounded-xl overflow-hidden;
+
+	&__main-content {
+		@apply col-span-5 bg-white pl-8 pt-6 pr-16;
+	}
+
+	&__image-content {
+		@apply col-span-2 bg-white;
+	}
+
+	&__table-element {
+		@apply border-2 border-gray-300 border-solid;
+	}
+}

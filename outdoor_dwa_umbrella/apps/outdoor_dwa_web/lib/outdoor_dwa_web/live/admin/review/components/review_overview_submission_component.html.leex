@@ -1,0 +1,15 @@
+<tr id="<%= @submission.submission_id %>" class="<%= generate_visibility_class(@submission.status)%>">
+    <td class="table__cell"><%= @submission.title %></td>
+    <td class="table__cell"><%= @submission.team_name %></td>
+    <td class="table__cell"><%= @submission.status %></td>
+    <td class="table__cell"><%= time_since_submission(@submission.submitted_at) %></td>
+    <td class="table__cell">
+        <%= if !@scores_published do %>
+            <%= if (@submission.type == "practical_task") do %>
+                <a href="<%= Routes.admin_task_review_path(@socket, :index, @submission.submission_id) %>" class="button button--primary">View</a>
+            <% else %>
+                <a href="<%= Routes.admin_project_review_path(@socket, :index, @submission.submission_id) %>" class="button button--primary">View</a>
+            <% end %>
+        <% end %>
+    </td>
+</tr>

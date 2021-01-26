@@ -1,0 +1,55 @@
+<main class="container px-6 mx-auto">
+
+    <h4>Task Details</h4>
+    <p class="mb-8"> Let's get it started!</p>
+
+    <%= if !assigns[:is_future_edition] || @is_future_edition == nil do %>
+        <%= if assigns[:practical_task] do %>
+        <div class="w-full">
+            <div class="two-pane-view">
+                <div class="two-pane-view__main-content" id="<%=@practical_task_team.id %>">
+                    <h5><%= @practical_task.title %></h5>
+                    <p class="font-semibold text-lg"> About </p>
+                    <p class="mb-1"><div class="mb-4"><%= raw @practical_task.description %></div></p>
+                    <p class="font-semibold text-lg"> Status </p>
+                    <p class="mb-1"> <%= @practical_task_team.status %> </p>
+                    <p class="font-semibold text-lg"> Results </p>
+                    <%= if length(@practical_task_submissions) == 0 do %>
+                        <i>No attempts made yet.</i>
+                    <% else  %>
+                        <%= live_component @socket, OutdoorDwaWeb.PracticalTaskSubmissionsLiveComponent, practical_task_submissions: @practical_task_submissions, title: @practical_task.title, id: @practical_task.id %>
+                    <% end %>
+
+                    <div class="flex flex-row my-4 space-x-4">
+                        <%= form_for :upload, "#", [phx_change: :validate, phx_submit: :save] %>
+                            <div class="flex flex-col">
+                                <div class="flex flex-row">
+                                    <%= if assigns[:uploads] && @practical_task_team.status != "Done" && @practical_task_team.status != "Being Reviewed" && @progression_allowed? do %>
+                                        <label class="button button--upload mr-2">
+                                            <span>Choose file</span>
+                                            <%= live_file_input @uploads.file, [class: "hidden"]  %>
+                                        </label>
+                                    <% end %>
+                                    <%= if assigns[:uploads] && !assigns[:disabled] && @progression_allowed? do %>
+                                    <button type="submit"
+                                            class="<%= upload_button_css_classes(@practical_task_team.status, @uploads, @progression_allowed?)%>"><i
+                                            class="fas fa-arrow-up"></i>Upload
+                                    </button>
+                                    <% end %>
+                                    <a href="<%= Routes.task_overview_path(@socket, :index) %>" class="button button--secondary ml-2">Back</a>
+                                </div>
+                                <%= live_component @socket, OutdoorDwaWeb.UploadErrorLiveComponent, file: @uploads.file %>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="two-pane-view__image-content bg-cover" style="background-image: url('/images/home_1.jpg');">
+                    <div class="h-full w-full bg-black opacity-25"></div>
+                </div>
+            </div>
+        </div>
+        <% end %>
+    <% else %>
+        <%= live_component @socket, OutdoorDwaWeb.FutureEditionMessageLiveComponent, team_id: @team_id, is_future_edition: @is_future_edition, user_role: @user_role %>
+    <% end %>
+</main>

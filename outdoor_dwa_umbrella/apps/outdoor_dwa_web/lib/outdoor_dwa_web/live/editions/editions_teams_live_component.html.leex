@@ -1,0 +1,13 @@
+<div class="mt-4">
+    <%= if length(@teams) > 0 do %>
+    <p class="font-semibold text-xl py-1">These teams already signed up for this edition: </p>
+
+    <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 py-2">
+        <%= for team <- @teams do %>
+        <div class="shadow-md rounded-lg bg-white p-2 text-center"><%= team.organisation_name %></div>
+        <% end %>
+    </div>
+    <% else %>
+    <p class="font-semibold text-xl py-1">No teams signed up yet. Be the first!</p>
+    <% end %>
+</div>

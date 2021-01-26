@@ -1,0 +1,33 @@
+<main class="container px-6 mx-auto">
+    <%= if assigns[:error] do %>
+        <div class="alert alert-danger">
+            <%= @error %>
+        </div>
+    <% end %>
+
+    <div class="mb-6">
+        <h4><%= if @is_create do %>Create<% else %>Update<% end %> an announcement</h4>
+        <p>This is a edition wide announcement starting at <%= @active_or_upcoming_edition.start_datetime %></p>
+    </div>
+
+    <%= f = form_for @changeset, "#", [class: "form__container", phx_change: :validate, phx_submit: :save] %>
+    <div class="mb-4">
+        <div phx-update="ignore" class="my-4">
+            <label class="form__label">Announcement</label>
+            <%= error_tag f, :announcement %>
+            <%= hidden_input f, :announcement, [id: "announcement-editor"] %>
+            <trix-editor input="announcement-editor"></trix-editor>
+        </div>
+    </div>
+
+    <%= submit "Submit", [class: submit_button_css_classes(!@changeset.valid?), phx_disable_with: "Saving...", disabled: !@changeset.valid? ] %>
+
+    </form>
+
+    <script>
+        document.addEventListener('trix-change', () => {
+            const editor = document.querySelector('#announcement-editor');
+            editor.dispatchEvent(new Event('change', {'bubbles': true}))
+        });
+    </script>
+</main>

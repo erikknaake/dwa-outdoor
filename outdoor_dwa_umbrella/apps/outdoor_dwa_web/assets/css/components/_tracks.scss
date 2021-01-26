@@ -1,0 +1,50 @@
+.tracks {
+  &__card {
+    @apply shadow-md rounded-lg bg-white p-2;
+  }
+
+  &__row {
+    @apply flex flex-row h-12 my-2;
+  }
+
+  &__pill {
+    @apply shadow-md px-20 rounded-full bg-gray-100 flex items-center justify-center mr-4;
+    white-space: nowrap;
+  }
+
+  &__circle {
+    @apply shadow-md rounded-full h-12 w-12 flex items-center justify-center mr-4 text-white;
+
+    &--completed {
+      @apply bg-green-600;
+    }
+
+    &--waiting-for-next-attempt {
+      @apply bg-blue-700;
+    }
+
+    &--skipped {
+      @apply bg-red-600;
+    }
+
+    &--in-progress {
+      @apply bg-yellow-400;
+    }
+
+    &--not-bought {
+      @apply bg-white text-green-600;
+    }
+  }
+
+  &__notification {
+    @apply p-2;
+
+    &--success {
+      @apply text-green-600;
+    }
+
+    &--failed {
+      @apply text-red-600;
+    }
+  }
+}

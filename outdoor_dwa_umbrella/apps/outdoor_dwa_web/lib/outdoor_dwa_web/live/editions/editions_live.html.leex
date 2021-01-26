@@ -1,0 +1,5 @@
+<main class="container px-6 mx-auto">
+    <%= live_component @socket, OutdoorDwaWeb.EditionsInfoLiveComponent, edition: @edition %>
+
+    <%= live_component @socket, OutdoorDwaWeb.EditionsTeamsLiveComponent, teams: @teams %>
+</main>
