@@ -21,7 +21,7 @@ All documents are written in Dutch as this was a project for our study.
 
 With docker:
 - copy `.env.example` to `.env` and edit values as needed.
-- `docker-compose up --env-file=.env --scale phoenix=2`
+- `docker-compose up --env-file=.env`
 
 Zie hoofdstuk [deployment](./docs/software_guidebook/11-deployment.md) in het software guidebook.
 
