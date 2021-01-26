@@ -1,0 +1,23 @@
+.table {
+  &__container {
+    @apply bg-white rounded-xl shadow-md;
+  }
+
+  &__my-team-row {
+    @apply bg-gray-200 font-bold;
+  }
+
+  &__row {
+    &--active {
+      @apply bg-green-100;
+    }
+  }
+
+  &__cell {
+    @apply px-8 py-4;
+
+    &--header  {
+      @apply border-b border-gray-600 text-left px-8 py-4 text-gray-400;
+    }
+  }
+}

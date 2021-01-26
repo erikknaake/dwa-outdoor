@@ -1,0 +1,20 @@
+<form phx-submit="add_coorganisator" class="form form__container my-4">
+    <div class="md:flex">
+        <div class="md:w-1/2 w-full md:pr-8">
+            <%= if length(@possible_coorganisators) != 0 do %>
+                <div class="form__field">
+                    <label class="form form__label">User</label>
+                    <select name="user_id" class="form form__input">
+                        <%= for user <- @possible_coorganisators do %>
+                            <option value="<%= user.id %>"><%= user.name %></option>
+                        <% end %>
+                    </select>
+                </div>
+
+                <button type="submit" class="button button--primary">Add</button>
+            <% else %>
+                <p> There are currently no users available to be added as a coorganisator </p>
+            <% end %>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,41 @@
+<main class="container px-6 mx-auto">
+    <div class="mb-6">
+        <h4><%= if @is_create do %>Create<% else %>Edit<% end %> travel question</h4>
+        <p>Change or create a travel question</p>
+    </div>
+
+    <div id="map-box-container" phx-update="ignore" class="h-80 rounded-xl shadow-md mb-4 relative overflow-hidden" phx-hook="MapBoxPolygon"></div>
+
+    <%= f = form_for @changeset, "#", [class: "form__container", phx_change: :validate, phx_submit: :save] %>
+
+    <div class="md:flex mb-4">
+        <div class="md:w-1/2 w-full md:pr-8">
+            <label class="form__label">Question</label>
+            <%= text_input f, :question, [class: "form__input", phx_debounce: "blur" ] %>
+            <%= error_tag f, :question %>
+
+            <label class="form__label mt-4">Description</label>
+            <%= text_input f, :description, [class: "form__input", phx_debounce: "blur" ] %>
+            <%= error_tag f, :description %>
+
+            <label class="form__label mt-4">Track</label>
+            <%= select f, :track_id, Enum.map(@tracks, &{&1.track_name, &1.id}), [class: "form__input"]%>
+        </div>
+
+        <div class="md:w-1/2 w-full md:pr-8">
+            <label class="form__label">Travel Credit Cost</label>
+            <%= number_input f, :travel_credit_cost, [class: "form__input", placeholder: 2, min: 0] %>
+            <%= error_tag f, :travel_credit_cost %>
+
+            <label class="form__label mt-4">Travel Point Reward</label>
+            <%= number_input f, :travel_point_reward, [class: "form__input mb-4", placeholder: 2, min: 0] %>
+            <%= error_tag f, :travel_point_reward %>
+            <%= if assigns[:area] do %>
+                <%= hidden_input f, :area, [value: @area, id: "areaInput"] %>
+            <% end %>
+            <%= submit "Submit", [class: submit_button_css_classes(!@changeset.valid?), phx_disable_with: "Saving...", disabled: !@changeset.valid? ] %>
+        </div>
+    </div>
+
+    </form>
+</main>

@@ -1,0 +1,58 @@
+<main class="container px-6 mx-auto">
+    <h4>Tracks</h4>
+    <p class="mb-8">The big picture!</p>
+
+    <%= if !assigns[:is_future_edition] || @is_future_edition == nil do %>
+        <div class="tracks__card">
+            <h5>Overview</h5>
+
+            <%= if assigns[:tracks] do %>
+                <%= for track <- @tracks do %>
+                    <%= live_component @socket, OutdoorDwaWeb.TrackOverviewLiveComponent, track_name: track.track_name, questions: track.questions %>
+                <% end %>
+            <% end %>
+
+            <%= if assigns[:notification] do %>
+            <div class="p-2 tracks__notification--<%= @notification.type %>">
+                <%= @notification.message %>
+            </div>
+            <% end %>
+
+            <div class="p-2">
+            <%= if assigns[:team] do %>
+            <b><%= @team.travel_credits %></b> Travel Credits
+            <% end %>
+            </div>
+
+            <%= live_component @socket, OutdoorDwaWeb.TrackLegendLiveComponent, items: [
+                %{
+                    name: "?",
+                    status: "completed",
+                    description: "Completed"
+                },
+                %{
+                   name: "?",
+                   status: "in-progress",
+                   description: "Ready to be answered"
+                },
+                %{
+                    name: "?",
+                    status: "waiting-for-next-attempt",
+                   description: "On cooldown"
+                },
+                %{
+                    name: "?",
+                    status: "skipped",
+                   description: "Skipped"
+                },
+               %{
+                   name: "",
+                   status: "not-bought",
+                   description: "Buy next question"
+               },
+            ] %>
+        </div>
+    <% else %>
+        <%= live_component @socket, OutdoorDwaWeb.FutureEditionMessageLiveComponent, team_id: @team_id, is_future_edition: @is_future_edition, user_role: @user_role %>
+    <% end %>
+</main>

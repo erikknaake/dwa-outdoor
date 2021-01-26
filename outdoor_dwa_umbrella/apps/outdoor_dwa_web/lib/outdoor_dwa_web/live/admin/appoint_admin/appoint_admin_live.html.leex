@@ -1,0 +1,9 @@
+<main class="container px-6 mx-auto">
+    <h4>Admins</h4>
+    <p class="mb-8">Appoint admins so they can organisate editions</p>
+
+    <%= f = form_for :appointment, "#", [phx_submit: :save, phx_change: :validate, class: "form form__container my-4"] %>
+        <%= select f, :user, @possible_admins, [prompt: "Choose user", value: @user] %>
+        <%= submit "Appoint", [class: submit_css_classes(!@valid), disabled: !@valid] %>
+    </form>
+</main>

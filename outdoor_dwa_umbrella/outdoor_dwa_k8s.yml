@@ -1,0 +1,346 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: outdoor-dwa
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: outdoor-dwa-ingress
+  namespace: outdoor-dwa
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 200m
+spec:
+  rules:
+    - host: dwa-outdoor.test # PROD: outdoor-dwa.k8s.aimsites.nl
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              serviceName: outdoor-dwa-svc
+              servicePort: 80
+    - host: file.dwa-outdoor.test #outdoor-dwa-files.k8s.aimsites.nl
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              serviceName: outdoor-dwa-file-svc
+              servicePort: 9000
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: outdoor-dwa-svc
+  namespace: outdoor-dwa
+spec:
+  type: NodePort
+  selector:
+    app: outdoor-dwa-app
+  ports:
+    - protocol: TCP
+      port: 80
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: outdoor-dwa-app-deployment
+  namespace: outdoor-dwa
+  labels:
+    app: outdoor-dwa-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: outdoor-dwa-app
+      tier: web
+  template:
+    metadata:
+      labels:
+        app: outdoor-dwa-app
+        tier: web
+    spec:
+      imagePullSecrets:
+        - name: packages
+      containers:
+        - name: outdoor-dwa-umbrella
+          image: ghcr.io/erikknaake/dwa-outdoor/dwa-outdoor-app:v0.13.0
+          ports:
+            - containerPort: 80
+          env:
+            - name: USE_KUBECTL_DISCOVERY
+              value: "true"
+            - name: MIX_ENV
+              value: "prod"
+            - name: DATABASE_URL
+              value: "eecto://postgres:postgres@outdoor-dwa-db-svc.outdoor-dwa/dwa_outdoor"
+            - name: SECRET_KEY_BASE
+              value: "WnP6FgChxWpqluRF2I0ZE4idgnRlOPtbeuOwoNdR6pNWdUu3/pluNA6s/Kqw+CaW"
+            - name: MINIO_HOST
+              value: "file.dwa-outdoor.test" #PROD :outdoor-dwa-files.k8s.aimsites.nl"
+            - name: MINIO_PORT
+              value: "80"
+            - name: MINIO_ACCESS_KEY
+              value: "minio"
+            - name: MINIO_SECRET_KEY
+              value: "minio123"
+            - name: PORT
+              value: "80"
+            - name: HOST
+              value: "dwa-outdoor.test" # PROD: outdoor-dwa.k8s.aimsites.nl
+            - name: SKIP_SEED
+              value: "false"
+            - name: TRAVEL_QUESTION_COOLDOWN
+              value: "5"
+            - name: TRAVEL_QUESTION_SWEEPER_COOLDOWN
+              value: "15"
+      initContainers:
+        - name: outdoor-dwa-create-bucket
+          image: ghcr.io/erikknaake/dwa-outdoor/dwa-outdoor-bucket:v0.13.0
+          env:
+            - name: MINIO_ACCESS_KEY
+              value: "minio"
+            - name: MINIO_SECRET_KEY
+              value: "minio123"
+            - name: MINIO_ADDRESS
+              value: "http://file.dwa-outdoor.test" # PROD: http://outdoor-dwa-files.k8s.aimsites.nl
+          command: [ "sh", "create-bucket-entrypoint.sh" ]
+
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  namespace: outdoor-dwa
+  name: outdoor-dwa-db-pv
+  labels:
+    app: outdoor-dwa
+    tier: persistence
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 256Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/outdoor-dwa-db"
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: outdoor-dwa-db-pv-claim
+  namespace: outdoor-dwa
+  labels:
+    app: outdoor-dwa
+spec:
+  storageClassName: "standard"
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 256Mi
+  selector:
+    matchLabels:
+      app: outdoor-dwa
+      tier: persistence
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: outdoor-dwa-db-svc
+  namespace: outdoor-dwa
+  labels:
+    app: outdoor-dwa
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: outdoor-dwa
+    tier: db
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: outdoor-dwa-db
+  namespace: outdoor-dwa
+  labels:
+    app: outdoor-dwa
+spec:
+  selector:
+    matchLabels:
+      app: outdoor-dwa
+      tier: db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: outdoor-dwa
+        tier: db
+    spec:
+      containers:
+        - image: postgres:13.1-alpine
+          name: postgres
+          env:
+            - name: POSTGRES_DB
+              value: "dwa_outdoor"
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              value: "postgres"
+          ports:
+            - containerPort: 5432
+              name: postgres
+          volumeMounts:
+            - name: postgres-persistent-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgres-persistent-storage
+          persistentVolumeClaim:
+            claimName: outdoor-dwa-db-pv-claim
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: outdoor-dwa-file-svc
+  namespace: outdoor-dwa
+  labels:
+    app: outdoor-dwa
+spec:
+  ports:
+    - port: 9000
+  selector:
+    app: outdoor-dwa-file
+    tier: file
+
+---
+
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  namespace: outdoor-dwa
+  name: outdoor-dwa-file-pv
+  labels:
+    app: outdoor-dwa-file
+    tier: persistence
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 256Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/outdoor-dwa-file"
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: outdoor-dwa-file-pv-claim
+  namespace: outdoor-dwa
+  labels:
+    app: outdoor-dwa
+spec:
+  storageClassName: "standard"
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 256Mi
+  selector:
+    matchLabels:
+      app: outdoor-dwa-file
+      tier: persistence
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: outdoor-dwa-file-deployment
+  namespace: outdoor-dwa
+  labels:
+    app: outdoor-dwa-file
+    tier: file
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: outdoor-dwa-file
+      tier: file
+  template:
+    metadata:
+      labels:
+        app: outdoor-dwa-file
+        tier: file
+    spec:
+      containers:
+        - name: outdoor-dwa-file
+          image: minio/minio
+          command: [ "/usr/bin/minio" ]
+          args: [ "server", "/data" ]
+          ports:
+            - containerPort: 9000
+              name: minio
+          env:
+            - name: MINIO_ACCESS_KEY
+              value: "minio"
+            - name: MINIO_SECRET_KEY
+              value: "minio123"
+          volumeMounts:
+            - name: file-persistent-storage
+              mountPath: /data
+      volumes:
+        - name: file-persistent-storage
+          persistentVolumeClaim:
+            claimName: outdoor-dwa-file-pv-claim
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  creationTimestamp: null
+  name: read-role
+  namespace: outdoor-dwa
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - services
+      - endpoints
+    verbs:
+      - get
+      - list
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  creationTimestamp: null
+  name: outdoor-dwa-role-biding
+  namespace: outdoor-dwa
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: read-role
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: outdoor-dwa

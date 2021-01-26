@@ -1,0 +1,20 @@
+<main class="container px-6 mx-auto">
+    <h4>Login</h4>
+
+    <%= f = form_for :login, "#", [class: "form form__container", phx_submit: :save] %>
+        <div class="form form__field">
+            <label class="form form__label">Username</label>
+            <%= text_input f, :name, [class: form_input_css_classes(@success), placeholder: "Username" ] %>
+        </div>
+        <div class="form form__field">
+            <label class="form form__label">Password</label>
+            <%= password_input f, :password, [class: form_input_css_classes(@success), placeholder: "Password"] %>
+        </div>
+        <%= if @success == false do %>
+            <div class="form form__invalid-feedback">
+                The username password combination is invalid
+            </div>
+        <% end %>
+        <%= submit "Submit", [class: "button button--primary", phx_disable_with: "Login in..." ] %>
+    </form>
+</main>

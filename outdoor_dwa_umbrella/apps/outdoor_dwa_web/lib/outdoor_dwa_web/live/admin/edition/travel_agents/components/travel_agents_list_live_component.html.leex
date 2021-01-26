@@ -1,0 +1,13 @@
+<div class="mt-4">
+    <%= if length(@agents) > 0 do %>
+    <p class="font-semibold text-xl py-1">Current Travel Agents:</p>
+
+    <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 py-2">
+        <%= for agent <- @agents do %>
+            <div class="shadow-md rounded-lg bg-white p-2 text-center"><%= agent.name %></div>
+        <% end %>
+    </div>
+    <% else %>
+    <p class="font-semibold text-xl py-1">No agents for this edition yet. Add an agent!</p>
+    <% end %>
+</div>

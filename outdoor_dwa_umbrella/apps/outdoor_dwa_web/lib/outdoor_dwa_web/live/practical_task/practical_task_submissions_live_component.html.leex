@@ -1,0 +1,39 @@
+<table class="two-pane-view__table-element">
+    <thead>
+    <tr>
+        <th class="px-4 py-1 text-left two-pane-view__table-element">Attempt</th>
+        <th class="px-4 py-1 text-left two-pane-view__table-element">Uploaded file</th>
+        <th class="px-4 py-1 text-left two-pane-view__table-element">Status</th>
+        <th class="px-4 py-1 text-left two-pane-view__table-element">Reason</th>
+    </tr>
+    </thead>
+    <tbody id="submissions" phx-update="append">
+    <%= for submission <- @practical_task_submissions do %>
+    <tr id="<%=submission.id%>">
+        <td class="px-2 py-1 two-pane-view__table-element">
+            <%= submission.attempt_number %>
+        </td>
+        <td class="px-2 py-1 two-pane-view__table-element">
+            <p class="text-blue-400" phx-click="show_file" phx-value-file_uuid="<%= submission.file_uuid %>" phx-target=<%= @myself %>>
+                <%= make_file_name(@title, submission.attempt_number, submission.file_uuid) %>
+            </p>
+        </td>
+        <td class="px-2 py-1 two-pane-view__table-element">
+            <%= submission.approval_state %>
+        </td>
+        <td class="px-2 py-1 two-pane-view__table-element">
+            <%= submission.reason %>
+        </td>
+    </tr>
+    <% end %>
+    </tbody>
+</table>
+<div class="<%= modal_css_classes(@file_uuid) %>">
+    <%= if @file_uuid != nil do %>
+        <div class="modal__overlay" phx-click="hide_file" phx-target=<%= @myself %>>
+            <div class="modal__content">
+                <%= live_component @socket, OutdoorDwaWeb.UploadedFileLiveComponent, file_uuid: @file_uuid %>
+            </div>
+        </div>
+    <% end %>
+</div>

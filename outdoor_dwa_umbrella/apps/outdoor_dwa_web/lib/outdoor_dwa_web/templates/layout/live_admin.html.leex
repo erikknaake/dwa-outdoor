@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <%= csrf_meta_tag() %>
+    <%= live_title_tag assigns[:page_title] || "OutdoorDwa", suffix: " · Phoenix Framework" %>
+    <link phx-track-static rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+    <script defer phx-track-static type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+</head>
+<body class= "bg-gray-100">
+<header>
+    <section class="container mx-auto">
+        <nav role="navigation" class="flex justify-between">
+            <ul class="flex p-0">
+                <li class="py-6 px-4" data-show-if-authenticated><a class="text-black" href="<%= Routes.home_path(@conn, :index) %>">HOME</a></li>
+                <li class="py-6 px-4" data-show-if-role="Admin"><a class="text-black" href="<%= Routes.admin_appoint_admin_path(@conn, :index) %>">ADMINS</a></li>
+                <li class="py-6 px-4" data-show-if-role="Admin,Organisator,CoOrganisator"><a class="text-black" href="<%= Routes.admin_edition_overview_path(@conn, :index) %>">EDITIONS</a></li>
+                <li class="py-6 px-4" data-show-if-role="Organisator,CoOrganisator,TravelGuide"><a class="text-black" href="<%= Routes.admin_practical_task_overview_path(@conn, :index) %>">PRACTICAL TASKS</a></li>
+                <li class="py-6 px-4" data-show-if-role="Organisator,CoOrganisator,TravelGuide"><a class="text-black" href="<%= Routes.admin_travel_question_overview_path(@conn, :index) %>">TRAVEL QUESTIONS</a></li>
+                <li class="py-6 px-4" data-show-if-role="Organisator,CoOrganisator,TravelGuide"><a class="text-black" href="<%= Routes.admin_project_overview_path(@conn, :index) %>">PROJECTS</a></li>
+                <li class="py-6 px-4" data-show-if-role="Organisator,CoOrganisator,TravelGuide"><a class="text-black" href="<%= Routes.admin_review_overview_path(@conn, :index) %>">REVIEWS</a></li>
+                <li class="py-6 px-4" data-show-if-role="Organisator,CoOrganisator,TravelGuide"><a class="text-black" href="<%= Routes.admin_project_review_overview_path(@conn, :index) %>">PROJECT REVIEWS</a></li>
+                <li class="py-6 px-4" data-show-if-role="Organisator,CoOrganisator"><a class="text-black" href="<%= Routes.admin_announcement_overview_path(@conn, :index) %>">ANNOUNCEMENTS</a></li>
+            </ul>
+
+            <ul class="flex p-0">
+                <li class="p-6" data-show-if-authenticated><a class="text-black" href="<%= Routes.login_path(@conn, :index) %>">LOGOUT</a></li>
+            </ul>
+        </nav>
+    </section>
+</header>
+<%= @inner_content %>
+</body>
+</html>

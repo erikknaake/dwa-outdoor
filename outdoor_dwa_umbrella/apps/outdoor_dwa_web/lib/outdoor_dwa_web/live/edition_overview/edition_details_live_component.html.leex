@@ -1,0 +1,8 @@
+<tr class="<%= edition_row_css_class(@edition) %>">
+    <td class="table__cell">Edition <%= get_year(@edition.start_datetime) %></td>
+    <td class="table__cell"><%= format_date(@edition.start_datetime) %></td>
+    <td class="table__cell"><%= format_date(@edition.end_datetime) %></td>
+    <td class="table__cell">
+        <a href="<%= Routes.editions_path(@socket, :index, @edition.id) %>" class="button button--primary">View</a>
+    </td>
+</tr>

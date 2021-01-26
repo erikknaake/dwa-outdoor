@@ -1,0 +1,12 @@
+<main class="container px-6 mx-auto">
+    <h4>Co-Organisators</h4>
+    <p class="mb-8">Add Co-Organisators to this edition, to spread the workload!</p>
+
+    <%= if assigns[:coorganisators] do %>
+        <%= live_component @socket, OutdoorDwaWeb.Admin.CoorganisatorListLiveComponent, coorganisators: @coorganisators %>
+    <% end %>
+
+    <%= if assigns[:possible_coorganisators] do %>
+        <%= live_component @socket, OutdoorDwaWeb.Admin.CoorganisatorCreateLiveComponent, possible_coorganisators: @possible_coorganisators %>
+    <% end %>
+</main>

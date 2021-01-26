@@ -1,0 +1,65 @@
+<main class="container px-6 mx-auto">
+    <h4>Task Details</h4>
+    <p class="mb-8"> Let's get it started!</p>
+
+    <%= if !assigns[:is_future_edition] || @is_future_edition == nil do %>
+        <%= if assigns[:travel_question] do %>
+
+        <%= if assigns[:travel_questioning] && @travel_questioning.status == "Cooldown" && length(@travel_question_answers) > 0 do %>
+            <div class="tracks__card mb-5 text-center text-red-600">The current cooldown ends in
+                <span id="c2" class="count-down default"
+                     phx-hook="Countdown" data-countdown-date="<%= get_cooldown_end(@travel_question_answers) %>">
+                </span>
+            </div>
+        <% end %>
+
+    <div class="w-full">
+        <div class="two-pane-view min-h-1/2">
+            <div class="two-pane-view__main-content ">
+                <p class="font-semibold text-lg"> About </p>
+                <p class="mb-1"><%= @travel_question.description %></p>
+                <p class="font-semibold text-lg"> Status </p>
+                <p class="mb-1"> <%= @travel_questioning.status %> </p>
+                <p class="font-semibold text-lg"> Results </p>
+                <%= if length(@travel_question_answers) == 0 do %>
+                    <br /> <i>No attempts made yet.</i>
+                <% else %>
+                    <%= live_component @socket, OutdoorDwaWeb.LocationTaskAnswersLiveComponent, travel_question_answers: @travel_question_answers, id: @travel_question.id %>
+                <% end %>
+
+                    <div class="flex flex-row my-4 space-x-4">
+                        <%= if !assigns[:disabled] && !Enum.member?(["Done", "Skipped"], @travel_questioning.status) do %>
+                            <%= if @travel_questioning.status != "Cooldown" && @progression_allowed? do %>
+                                <%= f = form_for @changeset, "#", phx_submit: :save  %>
+
+                                    <%= hidden_input f, :latitude, value: @coords.latitude %>
+                                    <%= hidden_input f, :longitude, value: @coords.longitude %>
+
+                                    <%= submit "Submit location", [class: submit_button_css_classes(!@changeset.valid?), disabled: (!@changeset.valid?)] %>
+                                </form>
+                                <% end %>
+                            <%= if assigns[:progression_allowed?] do %>
+                                <%= if assigns[:skippable] do %>
+                                    <a href="#" class="button button--danger" phx-click="skip_question">
+                                        <i class="fas fa-angle-double-right"></i> Skip question
+                                    </a>
+                                <% else %>
+                                    <div id="c1" class="button button--danger button--disabled count-down"
+                                         phx-hook="Countdown" phx-update="ignore" data-countdown-date="<%= @skip_countdown %>">
+                                    </div>
+                                <% end %>
+                            <% end %>
+
+                        <% end %>
+                    </div>
+                </div>
+                <div class="two-pane-view__image-content overflow-hidden flex">
+                    <div id="map-box-container" phx-update="ignore" class="flex-grow relative" phx-hook="MapBox"></div>
+                </div>
+            </div>
+        </div>
+        <% end %>
+    <% else %>
+        <%= live_component @socket, OutdoorDwaWeb.FutureEditionMessageLiveComponent, team_id: @team_id, is_future_edition: @is_future_edition, user_role: @user_role %>
+    <% end %>
+</main>

@@ -1,0 +1,42 @@
+<main class="container px-6 mx-auto mb-12">
+    <h4>Project review</h4>
+    <p class="mb-8">Let them know how they did!</p>
+
+    <%= if(assigns[:submission]) do %>
+        <div class="tasks__card pb-4">
+            <div class="tasks__header">
+                <%= @submission.title %>
+            </div>
+            
+            <div class="tasks__media" phx-hook="ReviewImageLoaded" id="review-image">
+                <%= live_component @socket, OutdoorDwaWeb.UploadedFileLiveComponent, file_uuid: @submission.file_uuid %>
+            </div>
+            
+            
+
+            <div class="tasks__description">
+                <b>About</b> 
+                <p> <%= raw @submission.description %></p>
+            </div>
+            <%= if !reviewed?(@submission.status) do %>
+                <%= if !@scores_published do %>
+                    <div class="flex flex-row">
+                        <div class="tasks__buttons py-0 w-full flex content-center">
+                            <%= f = form_for :review, "#", [phx_submit: :review_submission] %>
+                                <%= select(f, :rewarded_points, ["1": 1, "2": 2, "4": 4, "6": 6], class: "form-select mt-1") %>
+                                <%= submit "Judge Project", class: "button button--primary" %>
+                                <a href="#" class="button button--secondary" phx-click="skip_submission"
+                               phx-value-submission_id="<%= @submission_id %>">Skip</a>
+                               
+                            </form>
+                            <div id="media-time-status" class="py-2 px-1"></div>
+                        </div>
+                    </div>
+                <% end %>
+            <% else %>
+                <span class="mx-6 block form__invalid-feedback"> Submission has already been reviewed  </span>
+                <a href="<%= Routes.admin_review_overview_path(@socket, :index) %>" class="mx-6 button button-primary bg-gray-300"> Back </a>
+            <% end %>
+        </div>
+    <% end %>
+</main>

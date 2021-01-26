@@ -1,0 +1,31 @@
+<main class="container px-6 mx-auto">
+
+    <div class="flex justify-between mb-6 items-end">
+        <div>
+            <h6>Editions</h6>
+            <p>An overview of all the editions</p>
+        </div>
+        <%= if @is_admin do %>
+            <a href="<%= Routes.admin_edition_form_path(@socket, :create) %>" class="button button--secondary">Create</a>
+        <% end %>
+    </div>
+
+    <table class="w-full table__container">
+        <thead>
+            <tr>
+                <th class="table__cell table__cell--header">Name</th>
+                <th class="table__cell table__cell--header">Begin date</th>
+                <th class="table__cell table__cell--header">End date</th>
+                <th class="table__cell table__cell--header">Open for registration</th>
+                <th class="table__cell table__cell--header text-center">View</th>
+                <th class="table__cell table__cell--header text-center">Travel Agents</th>
+                <th class="table__cell table__cell--header text-center">Co-organisers</th>
+            </tr>
+        </thead>
+        <tbody>
+            <%= for edition <- @editions do %>
+                <%= live_component @socket, OutdoorDwaWeb.Admin.EditionDetailsLiveComponent, edition: edition, is_admin: @is_admin %>
+            <% end %>
+        </tbody>
+    </table>
+</main>

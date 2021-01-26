@@ -1,0 +1,30 @@
+<main class="container px-6 mx-auto">
+    <h4>Review Queue</h4>
+    <p class="mb-8">Let them know how they did!</p>
+
+    <table class="w-full table__container">
+        <thead>
+        <tr>
+            <th class="table__cell table__cell--header">Task</th>
+            <th class="table__cell table__cell--header">Team</th>
+            <th class="table__cell table__cell--header">Status</th>
+            <th class="table__cell table__cell--header">Submitted</th>
+            <th class="table__cell table__cell--header">View</th>
+        </tr>
+        </thead>
+        <tbody id="submissions" phx-update="append">
+        <%= for submission <- @submissions do %>
+            <%= live_component @socket, ReviewOverviewSubmissionComponent,
+            submission: submission, scores_published: @scores_published %>
+        <% end %>
+        </tbody>
+    </table>
+    <%= if @is_co_organisator do %>
+    <div class="flex justify-end mt-2">
+        <button phx-click="publish_scores"
+                class="button button--secondary <%= if @scores_published, do: "button--disabled" %>" <%= if @scores_published, do: "disabled" %>>
+            Publish scores
+        </button>
+    </div>
+    <% end %>
+</main>

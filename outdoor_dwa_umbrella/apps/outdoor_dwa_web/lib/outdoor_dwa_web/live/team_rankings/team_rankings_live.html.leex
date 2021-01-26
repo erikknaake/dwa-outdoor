@@ -1,0 +1,42 @@
+<main class="container px-6 mx-auto">
+    <div>
+        <h4>Team Rankings</h4>
+        <p> How are the others doing?</p>
+    </div>
+
+    <%= if !assigns[:is_future_edition] || @is_future_edition == nil do %>
+    <div class="md:flex justify-end">
+            <form phx-submit="team_search" class="form flex">
+                <input type="text" name="team" class="form form__input" value="<%= @search_team_name %>"
+                       placeholder="Search" min="3"/>
+
+                <button class="button button--primary ml-3">Search</button>
+                <button phx-click="reset_search" class="button button--danger ml-3">Reset</button>
+            </form>
+    </div>
+
+    <table class="w-full mt-4 table__container">
+        <tr>
+            <th class="table__cell table__cell--header">Position</th>
+            <th class="table__cell table__cell--header">Team</th>
+            <th class="table__cell table__cell--header">Travel credits</th>
+            <th class="table__cell table__cell--header">Travel points</th>
+            <th class="table__cell table__cell--header">Rival</th>
+            <th class="table__cell table__cell--header"> View</th>
+        </tr>
+
+        <%= for team <- @teams do %>
+        <%= live_component @socket, OutdoorDwaWeb.TeamRankingDetailsLiveComponent, team: team, team_id: @team_id %>
+        <% end %>
+
+    </table>
+
+    <%= if length(@teams) == 1 && @search_team_name != "" do %>
+    <div class="text-center mt-4">
+        Er zijn geen teams gevonden die overeenkomen met "<b><%= @search_team_name %>"</b>
+    </div>
+    <% end %>
+    <% else %>
+    <%= live_component @socket, OutdoorDwaWeb.FutureEditionMessageLiveComponent, team_id: @team_id, is_future_edition: @is_future_edition, user_role: @user_role %>
+    <% end %>
+</main>

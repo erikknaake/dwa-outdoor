@@ -1,0 +1,6 @@
+<div class="tracks__row">
+    <div class="tracks__pill w-16"><%= @track_name %></div>
+    <%= for question <- @questions do %>
+        <%= live_component @socket, OutdoorDwaWeb.TrackIconLiveComponent, question: question %>
+    <% end %>
+</div>

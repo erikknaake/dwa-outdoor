@@ -1,0 +1,34 @@
+<table class="two-pane-view__table-element w-full">
+    <thead>
+        <tr>
+            <th class="px-4 py-1 two-pane-view__table-element  text-left">Attempt</th>
+            <th class="px-4 py-1 two-pane-view__table-element text-left">Coordinates</th>
+            <th class="px-4 py-1 two-pane-view__table-element text-left">Status</th>
+        </tr>
+    </thead>
+    <tbody id="answers">
+    <%= for answer <- @travel_question_answers do %>
+        <tr id="<%= answer.id %>">
+            <td class="px-2 py-1 two-pane-view__table-element">
+                <%= answer.attempt_number %>
+            </td>
+            <td class="px-2 py-1 two-pane-view__table-element">
+                <a href="#"
+                   phx-click="load_coords"
+                   phx-value-longitude="<%= answer.longitude %>"
+                   phx-value-latitude="<%= answer.latitude %>"
+                   class="text-blue-400">
+                    <%= Float.round(answer.longitude, 5) %>, <%= Float.round(answer.latitude, 5) %>
+                </a>
+            </td>
+            <td class="px-2 py-1 two-pane-view__table-element">
+                <%= if answer.is_correct do %>
+                    Correct
+                <% else %>
+                    Wrong
+                <% end %>
+            </td>
+        </tr>
+    <% end %>
+    </tbody>
+</table>

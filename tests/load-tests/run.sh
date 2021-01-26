@@ -1,0 +1,1 @@
+tsung -k -f ./tsung-config.xml start

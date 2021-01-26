@@ -1,0 +1,38 @@
+<main class="container px-6 mx-auto">
+    <div class="flex justify-between mb-6 items-end">
+        <div>
+            <h4>Project</h4>
+            <%= if is_nil(@edition) do %>
+            <p>There is no active edition, create one first</p>
+            <% else %>
+            <p>An overview of the projects of edition <%= @edition.start_datetime %> </p>
+            <% end %>
+        </div>
+
+        <%= if not (is_nil(@edition)||@edition_started) do %>
+            <a href="<%= Routes.admin_project_create_path(@socket, :index) %>" class="button button--secondary">Create</a>
+        <% end %>
+    </div>
+
+    <table class="w-full table__container">
+    <thead>
+        <tr>
+            <th class="table__cell table__cell--header">Title</th>
+            <th class="table__cell table__cell--header">Description</th>
+            <th class="table__cell table__cell--header">Edit</th>
+        </tr>
+    </thead>
+    <tbody>
+        <%= for project <- @projects do %>
+        <tr>
+            <td class="table__cell"><%= project.title %></td>
+            <td class="table__cell"><%= HtmlSanitizeEx.strip_tags project.description %></td>
+            <td class="table__cell">
+                <a href="<%= Routes.admin_project_edit_path(@socket, :index, project.id) %>"
+                   class="button button--primary">Edit</a>
+            </td>
+        </tr>
+        <% end %>
+    </tbody>
+    </table>
+</main>

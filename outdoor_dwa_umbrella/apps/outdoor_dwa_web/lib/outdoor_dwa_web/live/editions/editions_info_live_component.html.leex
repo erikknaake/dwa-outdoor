@@ -1,0 +1,20 @@
+<div>
+    <div class="flex justify-between mb-6 items-center">
+        <h4>Edition <%= get_year(@edition.start_datetime) %></h4>
+
+        <%= if @edition.is_open_for_registration do %>
+        <a href="<%= Routes.registrate_team_path(@socket, :index, @edition.id) %>"
+           class="button button--primary">
+            JOIN THE CHALLENGE
+        </a>
+        <% else %>
+        <h4>CLOSED</h4>
+        <% end %>
+    </div>
+
+    <div class="card">
+        <p class="text-gray-500 text-lg mb-2">Details</p>
+        <b>Start</b>: <%= format_date(@edition.start_datetime) %> <br/>
+        <b>End</b>: <%= format_date(@edition.end_datetime) %>
+    </div>
+</div>

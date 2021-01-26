@@ -1,0 +1,58 @@
+<main class="container px-6 mx-auto mb-6">
+    <%= if !assigns[:is_future_edition] || @is_future_edition == nil do %>
+
+        <%= if assigns[:projects] do %>
+            <%= if !@bought_project do %>
+                <%= live_component @socket, OutdoorDwaWeb.TeamProject.ProjectOverviewComponent, id: @team.id, projects: @projects, team: @team, only_teamleader_can_buy?: @only_teamleader_can_buy?, is_teamleader?: @is_teamleader?, progression_allowed?: @progression_allowed? %>
+            <% else %>
+                <h4> Project Details </h4>
+                <p class="mb-4">The moment of truth. Will you receive great riches, or lose travel points?</p>
+                <div class="flex justify-center space-y-8 flex-col items-end">
+                    <div class="two-pane-view">
+                       <div class="two-pane-view__main-content">
+                          <h5><%=  @bought_project.title %></h5>
+                            <p class="font-semibold text-lg"> Description </p>
+                            <p class="mb-1"><div class="mb-4"><%=raw @bought_project.description%></div></p>
+                            <p class="font-semibold text-lg"> Status </p>
+                            <p class="mb-1"> <%= @bought_project.status %> </p>
+
+                            <%= if (@bought_project.status != nil && @bought_project.status != "Bought") do %>
+                                <%= live_component @socket, OutdoorDwaWeb.TeamProject.ProjectResultComponent, id: @team.id, bought_project: @bought_project %>
+                            <% end %>
+
+                            <div class="flex flex-row my-4 space-x-4">
+                                <%= form_for :upload, "#", [phx_change: :validate, phx_submit: :save] %>
+                                    <div class="flex flex-col">
+                                        <div class="flex flex-row">
+                                            <%= if assigns[:uploads] && @bought_project.status == "Bought" && @progression_allowed? do %>
+                                                <label class="button button--upload mr-2">
+                                                    <span>Choose file</span>
+                                                    <%= live_file_input @uploads.file, [class: "hidden"]  %>
+                                               </label>
+                                           <% end %>
+                                          <%= if assigns[:uploads] && !assigns[:disabled] do %>
+                                          <button type="submit"
+                                                  class="<%= upload_button_css_classes(@bought_project.status, @uploads)%>"><i
+                                                 class="fas fa-arrow-up"></i>Upload
+                                         </button>
+                                         <% end %>
+                                     </div>
+                                     <%= live_component @socket, OutdoorDwaWeb.UploadErrorLiveComponent, file: @uploads.file %>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="two-pane-view__image-content bg-cover" style="background-image: url('/images/home_1.jpg');">
+                            <div class="h-full w-full bg-black opacity-25"></div>
+                        </div>
+                    </div>
+                </div>
+            <% end %>
+        <% end %>
+    <% else %>
+        <h4> Project Details </h4>
+        <p class="mb-4">The moment of truth. Will you receive great riches, or lose travel points?</p>
+
+        <%= live_component @socket, OutdoorDwaWeb.FutureEditionMessageLiveComponent, team_id: @team_id, is_future_edition: @is_future_edition, user_role: @user_role %>
+    <% end %>
+</main>

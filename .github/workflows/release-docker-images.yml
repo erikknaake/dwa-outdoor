@@ -1,0 +1,70 @@
+name: Release docker images
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-phoenix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+          ref: ${{ github.head_ref }}
+      - uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
+        with:
+          key: phoenix-docker-cache-${{ secrets.CACHE_KEY }}-{hash}
+          restore-keys: |
+            phoenix-docker-cache-${{ secrets.CACHE_KEY }}-
+      - name: Bump version and push tag
+        id: generate_tag
+        uses: anothrNick/github-tag-action@1.26.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+          RELEASE_BRANCHES: main
+      - name: App release metadata
+        id: app_release_metadata
+        run: echo ::set-output name=IMAGE_URL::ghcr.io/erikknaake/dwa-outdoor/dwa-outdoor-app:${{ steps.generate_tag.outputs.new_tag }}
+      - name: Build Phoenix Docker image
+        env:
+          IMAGE_URL: ${{ steps.app_release_metadata.outputs.IMAGE_URL }}
+        run: >
+          docker build outdoor_dwa_umbrella
+          --file outdoor_dwa_umbrella/Dockerfile
+          --tag $IMAGE_URL
+          --build-arg APPS_PATH=apps
+          --build-arg CONFIG_PATH=config
+          --build-arg DOMAIN_PATH=apps/outdoor_dwa
+          --build-arg WEB_PATH=apps/outdoor_dwa_web
+          --build-arg RELEASE_NAME=standard
+          --build-arg REL_PATH=rel
+          --build-arg UMBRELLA_PATH=/outdoor_dwa_umbrella
+      - name: Publish Phoenix Docker Image
+        run: docker login ghcr.io --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} && docker push ${{ steps.app_release_metadata.outputs.IMAGE_URL }}
+      - name: Bucket release metadata
+        id: bucket_release_metadata
+        run: echo ::set-output name=IMAGE_URL::ghcr.io/erikknaake/dwa-outdoor/dwa-outdoor-bucket:${{ steps.generate_tag.outputs.new_tag }}
+      - name: Build Create Bucket Image
+        env:
+          IMAGE_URL: ${{ steps.bucket_release_metadata.outputs.IMAGE_URL }}
+        run: >
+          docker build outdoor_dwa_umbrella/minio
+          --file outdoor_dwa_umbrella/minio/create-bucket.Dockerfile
+          --tag $IMAGE_URL
+      - name: Publish Create Bucker Docker Image
+        run: docker login ghcr.io --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} && docker push ${{ steps.bucket_release_metadata.outputs.IMAGE_URL }}
+      - name: Patch k8s file for new image versions
+        run: ./patch_k8s_images.sh ${{ steps.generate_tag.outputs.new_tag }}
+        working-directory: ./outdoor_dwa_umbrella/
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Patch image versions in k8s file
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          labels: |
+            automated pr
+          base: development
+          commit-message: Synchronize k8s file

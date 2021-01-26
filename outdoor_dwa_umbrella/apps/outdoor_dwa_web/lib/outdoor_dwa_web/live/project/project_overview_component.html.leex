@@ -1,0 +1,27 @@
+    <h4>The Projects </h4>
+    <p class="mb-4">You have one attempt, so make it count. Every project has a cost of 2 Travel Points.</p>
+        <div class="flex justify-center space-y-8 flex-col items-end">
+            <%= for project <- @projects do %>
+                <div class="two-pane-view"> 
+                    <div class="two-pane-view__main-content" id="project <%= project.project_id %>">
+                        <h5><%= project.title %></h5>
+                        <p class="font-semibold text-lg"> Description </p>
+                        <p class="mb-1"><div class="mb-4"><%= raw project.description %></div></p>
+                        <div class="flex flex-row my-4 space-x-4">
+                        
+                            <button type="submit" phx-click="purchase"
+                                phx-value-project_id="<%= project.project_id %>"
+                                phx-value-team_id="<%= @id %>"  
+                                phx-target="<%= @myself %>"                      
+                                class="button button--primary <%= purchase_button_css_class(@projects, @team, @only_teamleader_can_buy?, @is_teamleader?, @progression_allowed?)%>">
+                                <i class="fas fa-dollar-sign"></i>
+                                Purchase
+                            </button>
+                        </div>
+                    </div>
+                <div class="two-pane-view__image-content bg-cover" style="background-image: url('/images/home_1.jpg');">
+                    <div class="h-full w-full bg-black opacity-25"></div>
+                </div>
+                </div>
+            <% end %>
+        </div>

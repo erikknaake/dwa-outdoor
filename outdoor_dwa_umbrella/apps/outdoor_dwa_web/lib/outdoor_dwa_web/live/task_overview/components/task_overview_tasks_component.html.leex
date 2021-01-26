@@ -1,0 +1,31 @@
+<%= for task <- @tasks do %>
+    <div class="swim-lanes__card">
+        <a href="#" phx-click="load_task"
+           phx-value-task_id=<%= task.task_id %>
+        >
+            <h6 class="swim-lanes__title"><%= task.title %></h6>
+        </a>
+        <div class="swim-lanes__body">
+            <p> <%= HtmlSanitizeEx.strip_tags task.description %> </p>
+            <div class="flex flex-row mt-4">
+                <p class="tag <%= @colors[task.difficulty] %>"><%= task.difficulty %></p>
+                <p class="tag ml-2 bg-purple-500"><%= task.travel_credit_reward%> points</p>
+            </div>
+            <div class="flex flex-row mt-2">
+                <button phx-click="load_task"
+                        phx-value-task_id="<%= task.task_id %>"
+                        class="button button--primary mt-2 mr-2"
+                > Details
+                </button>
+                <%= if (task.status == "To Do" && @progression_allowed?) do %>
+                <button phx-click="start_task"
+                        phx-value-task_id="<%= task.task_id %>"
+                        phx-value-team_id="<%= task.team_id %>"
+                        class="button button--secondary ml mt-2"
+                > Start Task
+                </button>
+                <% end %>
+            </div>
+        </div>
+    </div>
+<% end %>

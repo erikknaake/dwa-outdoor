@@ -1,0 +1,67 @@
+<%= if assigns[:team] do %>
+<main class="container px-6 mx-auto">
+    <h4> Progress </h4>
+    <p class="mb-8"> Will this be the winning team?</p>
+
+    <%= if !assigns[:is_future_edition] || @is_future_edition == nil do %>
+        <div class="max-w-full grid grid-cols-2 md:grid-cols-4 gap-0.5 bg-gray-300 rounded-xl shadow-md overflow-hidden">
+
+            <div class="grid-item__item">
+                <span class="grid-item__title">Travel credits</span>
+                <span class="grid-item__content"><%= @team.travel_credits %></span>
+            </div>
+
+            <div class="grid-item__item">
+                <span class="grid-item__title">Travel points</span>
+                <span class="grid-item__content"><%= @team.travel_points %></span>
+            </div>
+
+            <div class="grid-item__item">
+                <span class="grid-item__title">Used broom sweepers</span>
+                <span class="grid-item__content"><%= @team.number_of_broom_sweepers %></span>
+            </div>
+
+            <div class="grid-item__item">
+                <span class="grid-item__title">Next broom sweeper</span>
+                <%= if @next_broom_sweeper_datetime == "invalid_date" do %>
+                    <span class="grid-item__content">00:00</span>
+                <% else %>
+                    <span class="grid-item__content count-down count-down--no-hours" id="c1" phx-hook="Countdown" data-countdown-date="<%= @next_broom_sweeper_datetime %>"></span>
+                <% end %>
+            </div>
+
+            <%= for track <- @task_track_count do %>
+                <div class="grid-item__item">
+                    <span class="grid-item__title">Questions left: <%= track.track_name %></span>
+                    <span class="grid-item__content">
+                        <%= track.number_of_questions - track.number_of_questions_done %>/<%= track.number_of_questions %>
+                    </span>
+                </div>
+            <% end %>
+
+        <div class="grid-item__item">
+            <span class="grid-item__title">Total time left</span>
+            <span class="grid-item__content count-down" id="c3" phx-hook="Countdown" data-countdown-date="<%= @edition_end_datetime %>"></span>
+        </div>
+
+        <%= for track <- @task_track_count do %>
+            <div class="grid-item__item">
+                <span class="grid-item__title">Next attempt: <%= track.track_name %></span>
+                <%= if track.next_attempt_datetime == :invalid_date or track.track_cooldown == 0 do %>
+                    <span class="grid-item__content">00:00</span>
+                <% else %>
+                    <span class="grid-item__content count-down count-down--no-hours" id="c2<%= track.next_attempt_datetime %>" phx-hook="Countdown" data-countdown-date="<%= track.next_attempt_datetime %>"></span>
+                <% end %>
+            </div>
+        <% end %>
+
+            <div class="grid-item__item">
+                <span class="grid-item__title">Total number of participating teams</span>
+                <span class="grid-item__content"><%= @team_count %></span>
+            </div>
+        </div>
+    <% else %>
+        <%= live_component @socket, OutdoorDwaWeb.FutureEditionMessageLiveComponent, team_id: @team_id, is_future_edition: @is_future_edition, user_role: @user_role %>
+    <% end %>
+</main>
+<% end %>

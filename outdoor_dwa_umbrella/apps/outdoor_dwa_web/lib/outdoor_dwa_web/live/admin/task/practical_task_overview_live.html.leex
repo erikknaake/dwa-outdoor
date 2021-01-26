@@ -1,0 +1,51 @@
+<main class="container px-6 mx-auto">
+    <div class="flex justify-between mb-6 items-end">
+        <div>
+            <h4>Tasks</h4>
+            <%= if is_nil(@active_edition) do %>
+            <p>There is no active or upcoming edition, create one first</p>
+            <% else %>
+            <p>An overview of the practical tasks of
+                edition <%= OutdoorDwaWeb.DateFormatter.format_full_date(@active_edition.start_datetime) %> </p>
+            <% end %>
+        </div>
+
+        <%= if not is_nil(@active_edition) do %>
+        <a href="<%= Routes.admin_practical_task_create_path(@socket, :index) %>" class="button button--secondary">Create</a>
+        <% end %>
+    </div>
+    <%= f = form_for :publications, "#", [phx_submit: "change_publications", phx_change: "validate"] %>
+        <table class="w-full table__container">
+            <tr>
+                <th class="table__cell table__cell--header">Title</th>
+                <th class="table__cell table__cell--header">Description</th>
+                <th class="table__cell table__cell--header">Difficulty</th>
+                <th class="table__cell table__cell--header">Published</th>
+                <th class="table__cell table__cell--header">Travel credit reward</th>
+                <th class="table__cell table__cell--header">Edit</th>
+            </tr>
+
+            <%= for practical_task <- @practical_tasks do %>
+            <tr>
+                <td class="table__cell"><%= practical_task.title %></td>
+                <td class="table__cell"><%= HtmlSanitizeEx.strip_tags practical_task.description %></td>
+                <td class="table__cell"><%= practical_task.difficulty %></td>
+                <td class="table__cell">
+                    <%= checkbox(f, String.to_atom("#{practical_task.id}"), [value: practical_task.is_published, phx_update: "ignore", disabled: !can_be_edited(practical_task, @active_edition)]) %>
+                </td>
+                <td class="table__cell"><%= practical_task.travel_credit_reward %></td>
+                <td class="table__cell">
+                    <a href="<%= Routes.admin_practical_task_edit_path(@socket, :index, practical_task.id) %>"
+                       class="button button--primary">Edit</a>
+                </td>
+            </tr>
+            <% end %>
+        </table>
+        <div class="flex justify-end ">
+            <button class="<%= submit_publications_css_classes(@is_publication_valid) %>"
+                    <%= if !@is_publication_valid, do: "disabled" %>>
+                <%= submit_text(@active_edition) %>
+            </button>
+        </div>
+    </form>
+</main>
