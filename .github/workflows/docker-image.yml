@@ -63,7 +63,7 @@ jobs:
         run: docker login --username erikknaake --password ${{ secrets.DOCKER_HUB }} && docker push erikknaake/dwa:create-bucket-ci-$GITHUB_SHA
 
   end-to-end-tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     needs:
       - build-phoenix
       - build-create-bucket
@@ -102,7 +102,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   format-elixir-code:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     needs:
       - build-phoenix
       - build-create-bucket

@@ -20,7 +20,7 @@ All documents are written in Dutch as this was a project for our study.
 ## Starting the application
 
 With docker:
-- copy `.env.example` to `.env` and edit values as needed
+- copy `.env.example` to `.env` and edit values as needed.
 - `docker-compose up --env-file=.env --scale phoenix=2`
 
 Zie hoofdstuk [deployment](./docs/software_guidebook/11-deployment.md) in het software guidebook.

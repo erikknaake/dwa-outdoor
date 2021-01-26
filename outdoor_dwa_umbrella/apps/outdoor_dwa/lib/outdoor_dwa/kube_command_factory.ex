@@ -18,43 +18,43 @@ defmodule OutdoorDwa.KubeCommandFactory do
   end
 
   def get_pods(command) do
-    add_arg command, get "pods"
+    add_arg(command, get("pods"))
   end
 
   def get_services(command) do
-    add_arg command, get "services"
+    add_arg(command, get("services"))
   end
 
   def get_endpoints(command, name) do
-    add_arg command, get "endpoints " <> name
+    add_arg(command, get("endpoints " <> name))
   end
 
   def get_endpoints(command) do
-    add_arg command, get "endpoints"
+    add_arg(command, get("endpoints"))
   end
 
   def namespace(command, namespace) do
-    add_arg command, "-n " <> namespace
+    add_arg(command, "-n " <> namespace)
   end
 
   def output(command, output) do
-    add_arg command, "-o=" <> output
+    add_arg(command, "-o=" <> output)
   end
 
   def field_selector(command, field_selector) do
-    add_arg command, "--field-selector=" <> field_selector
+    add_arg(command, "--field-selector=" <> field_selector)
   end
 
   def pipe(command, pipe_operation \\ "xargs -I % ") do
-    new command, pipe_operation
+    new(command, pipe_operation)
   end
 
   def build(command, suffix \\ "") do
-    formatted_cmd = command.program <> " " <> (command.args |> Enum.join(" ")) <>  suffix
+    formatted_cmd = command.program <> " " <> (command.args |> Enum.join(" ")) <> suffix
 
     case command.prev do
       nil -> formatted_cmd
-      prev -> build prev, " | " <> command.pipe_operation <> formatted_cmd
+      prev -> build(prev, " | " <> command.pipe_operation <> formatted_cmd)
     end
   end
 
