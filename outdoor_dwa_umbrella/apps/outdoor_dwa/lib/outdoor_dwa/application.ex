@@ -38,19 +38,15 @@ defmodule OutdoorDwa.Application do
     # Parse IP out of nslookup result
     Regex.scan(~r/\d+\.\d+\.\d+\.\d+/, node_ips)
     |> List.flatten()
-      # Filter out this container
-    |> Enum.reject(
-         fn x ->
-           {own_ip, 0} = System.cmd("hostname", ["-i"])
-           x == own_ip
-         end
-       )
-      # Connect to other node
-    |> Enum.map(
-         fn ip ->
-           Node.connect(:"phoenix@#{ip}")
-         end
-       )
+    # Filter out this container
+    |> Enum.reject(fn x ->
+      {own_ip, 0} = System.cmd("hostname", ["-i"])
+      x == own_ip
+    end)
+    # Connect to other node
+    |> Enum.map(fn ip ->
+      Node.connect(:"phoenix@#{ip}")
+    end)
 
     IO.puts("Connected to: ")
     IO.inspect(Node.list())
@@ -64,18 +60,19 @@ defmodule OutdoorDwa.Application do
   end
 
   defp get_by_kubectl_discovery() do
-    kubectl_pods_query = KubeCmd.new
-                         |> KubeCmd.get_endpoints("outdoor-dwa-svc")
-                         |> KubeCmd.namespace("outdoor-dwa")
-                         |> KubeCmd.output("jsonpath='{.subsets[*].addresses[*].ip}'")
-                         |> KubeCmd.pipe("tr ' ' '\\n' | xargs -I % ")
-                         |> KubeCmd.get_pods
-                         |> KubeCmd.output("jsonpath='{.items[*].status.podIP} '")
-                         |> KubeCmd.field_selector("status.podIP=%")
-                         |> KubeCmd.namespace("outdoor-dwa")
-                         |> KubeCmd.build
+    kubectl_pods_query =
+      KubeCmd.new()
+      |> KubeCmd.get_endpoints("outdoor-dwa-svc")
+      |> KubeCmd.namespace("outdoor-dwa")
+      |> KubeCmd.output("jsonpath='{.subsets[*].addresses[*].ip}'")
+      |> KubeCmd.pipe("tr ' ' '\\n' | xargs -I % ")
+      |> KubeCmd.get_pods()
+      |> KubeCmd.output("jsonpath='{.items[*].status.podIP} '")
+      |> KubeCmd.field_selector("status.podIP=%")
+      |> KubeCmd.namespace("outdoor-dwa")
+      |> KubeCmd.build()
 
-    to_string :os.cmd(String.to_atom(kubectl_pods_query))
+    to_string(:os.cmd(String.to_atom(kubectl_pods_query)))
   end
 
   defp get_by_dns() do
